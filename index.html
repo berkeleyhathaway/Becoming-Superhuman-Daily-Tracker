@@ -7,51 +7,93 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Focus Sprint Timer</h1>
-        
-        <div class="timer-display">
-            <span id="minutes">00</span>:<span id="seconds">00</span>
-            <button id="addTimeBtn" onclick="addTime(5)" style="display: none;">+5 min</button>
+    <div class="app-layout">
+        <div class="mit-sidebar">
+            <h2>Today's MITs</h2>
+            <button id="addMITBtn" onclick="showMITForm()">+ Add MIT</button>
+            
+            <div id="mitForm" class="mit-form" style="display: none;">
+                <input type="text" id="mitInput" placeholder="Enter an important task...">
+                <button onclick="askForBreakdown()">Add MIT</button>
+                <button onclick="hideMITForm()" class="cancel-btn">Cancel</button>
+            </div>
+
+            <div id="breakdownForm" class="breakdown-form" style="display: none;">
+                <p>Would you like to break this task down into smaller chunks?</p>
+                <button onclick="showSubtaskForm()">Yes, break it down</button>
+                <button onclick="saveMITWithoutBreakdown()">No, keep as is</button>
+            </div>
+
+            <div id="subtaskForm" class="subtask-form" style="display: none;">
+                <div id="subtaskList">
+                    <div class="subtask-input">
+                        <input type="text" placeholder="Subtask">
+                        <input type="number" placeholder="Minutes" min="1">
+                    </div>
+                </div>
+                <button onclick="addSubtaskInput()">+ Add Another Subtask</button>
+                <button onclick="saveMITWithSubtasks()">Save MIT & Subtasks</button>
+                <button onclick="hideSubtaskForm()" class="cancel-btn">Cancel</button>
+            </div>
+
+            <div id="mitList" class="mit-list">
+                <!-- MITs will be added here dynamically -->
+            </div>
         </div>
 
-        <div class="mode-label" id="modeLabel">Select Focus Sprint Duration</div>
-        
-        <div class="mode-toggle">
-            <button id="workModeBtn" class="active" onclick="toggleMode('work')">Work Mode</button>
-            <button id="breakModeBtn" onclick="toggleMode('break')">Break Mode</button>
-        </div>
+        <div class="container">
+            <h1>Focus Sprint Timer</h1>
+            
+            <div class="timer-display">
+                <span id="minutes">00</span>:<span id="seconds">00</span>
+                <button id="addTimeBtn" onclick="addTime(5)" style="display: none;">+5 min</button>
+            </div>
 
-        <div class="focus-buttons">
-            <button onclick="setTimer(15)">15 min</button>
-            <button onclick="setTimer(30)">30 min</button>
-            <button onclick="setTimer(60)">60 min</button>
-            <button onclick="setTimer(90)">90 min</button>
-        </div>
+            <div class="mode-label" id="modeLabel">Select Focus Sprint Duration</div>
+            
+            <div class="mode-toggle">
+                <button id="workModeBtn" class="active" onclick="toggleMode('work')">Work Mode</button>
+                <button id="breakModeBtn" onclick="toggleMode('break')">Break Mode</button>
+            </div>
 
-        <div class="break-buttons" style="display: none;">
-            <button onclick="setBreak(2)">2 min</button>
-            <button onclick="setBreak(5)">5 min</button>
-            <button onclick="setBreak(10)">10 min</button>
-        </div>
+            <div class="focus-buttons">
+                <button onclick="setTimer(15)">15 min</button>
+                <button onclick="setTimer(30)">30 min</button>
+                <button onclick="setTimer(60)">60 min</button>
+                <button onclick="setTimer(90)">90 min</button>
+            </div>
 
-        <div class="control-buttons">
-            <button id="startBtn" onclick="startTimer()">Start</button>
-            <button id="resetBtn" onclick="resetTimer()">Reset</button>
-        </div>
+            <div class="break-buttons" style="display: none;">
+                <button onclick="setBreak(2)">2 min</button>
+                <button onclick="setBreak(5)">5 min</button>
+                <button onclick="setBreak(10)">10 min</button>
+            </div>
 
-        <div id="breakSuggestions" class="break-suggestions" style="display: none;">
-            <h2>Break Suggestions</h2>
-            <ul>
-                <li>🚶‍♂️ Go for a quick walk</li>
-                <li>💧 Hydrate with a glass of water</li>
-                <li>🍎 Prepare a healthy snack</li>
-                <li>🐕 Pet your dog or cat</li>
-                <li>🧘‍♂️ Do some light stretching</li>
-                <li>👀 Look out the window (20-20-20 rule)</li>
-                <li>🌱 Water your plants</li>
-                <li>📱 Step away from screens</li>
-            </ul>
+            <div class="control-buttons">
+                <button id="startBtn" onclick="startTimer()">Start</button>
+                <button id="resetBtn" onclick="resetTimer()">Reset</button>
+            </div>
+
+            <div id="breakSuggestions" class="break-suggestions" style="display: none;">
+                <h2>Break Suggestions</h2>
+                <ul>
+                    <li>🚶‍♂️ Go for a quick walk</li>
+                    <li>💧 Hydrate with a glass of water</li>
+                    <li>🍎 Prepare a healthy snack</li>
+                    <li>🐕 Pet your dog or cat</li>
+                    <li>🧘‍♂️ Do some light stretching</li>
+                    <li>👀 Look out the window (20-20-20 rule)</li>
+                    <li>🌱 Water your plants</li>
+                    <li>📱 Step away from screens</li>
+                </ul>
+            </div>
+
+            <div id="sprintTaskSelect" class="sprint-task-select" style="display: none;">
+                <h3>Select Task for this Sprint:</h3>
+                <div id="sprintTaskOptions">
+                    <!-- Task options will be added here dynamically -->
+                </div>
+            </div>
         </div>
     </div>
     <script src="script.js"></script>

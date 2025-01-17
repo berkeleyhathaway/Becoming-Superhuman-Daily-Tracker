@@ -1,6 +1,9 @@
 let timeLeft;
 let timerId = null;
 let isBreakTime = false;
+let currentMITs = [];
+let currentMIT = null;
+let selectedTaskForSprint = null;
 
 const minutesDisplay = document.getElementById('minutes');
 const secondsDisplay = document.getElementById('seconds');
@@ -12,16 +15,24 @@ const workModeBtn = document.getElementById('workModeBtn');
 const breakModeBtn = document.getElementById('breakModeBtn');
 const addTimeBtn = document.getElementById('addTimeBtn');
 const breakSuggestions = document.getElementById('breakSuggestions');
+const mitForm = document.getElementById('mitForm');
+const mitInput = document.getElementById('mitInput');
+const breakdownForm = document.getElementById('breakdownForm');
+const subtaskForm = document.getElementById('subtaskForm');
+const subtaskList = document.getElementById('subtaskList');
+const mitList = document.getElementById('mitList');
+const sprintTaskSelect = document.getElementById('sprintTaskSelect');
+const sprintTaskOptions = document.getElementById('sprintTaskOptions');
 
 function setTimer(minutes) {
-    if (timerId) return; // Prevent setting timer while it's running
-    timeLeft = minutes * 60;
-    updateDisplay();
-    isBreakTime = false;
-    addTimeBtn.style.display = 'block';
-    modeLabel.textContent = `${minutes} Minute Focus Sprint`;
-    breakButtons.style.display = 'none';
-    breakSuggestions.style.display = 'none'; // Hide break suggestions when starting timer
+    if (timerId) return;
+    
+    // Show task selection before starting timer
+    sprintTaskSelect.style.display = 'block';
+    renderTaskOptions();
+    
+    // Store the minutes for later use
+    pendingMinutes = minutes;
 }
 
 function setBreak(minutes) {
@@ -114,4 +125,177 @@ function addTime(minutes) {
     if (!timerId || isBreakTime) return; // Only work during active work sessions
     timeLeft += minutes * 60;
     updateDisplay();
+}
+
+function showMITForm() {
+    mitForm.style.display = 'block';
+    mitInput.focus();
+}
+
+function hideMITForm() {
+    mitForm.style.display = 'none';
+    mitInput.value = '';
+}
+
+function askForBreakdown() {
+    if (!mitInput.value.trim()) return;
+    currentMIT = {
+        title: mitInput.value.trim(),
+        subtasks: [],
+        completed: false
+    };
+    mitForm.style.display = 'none';
+    breakdownForm.style.display = 'block';
+}
+
+function showSubtaskForm() {
+    breakdownForm.style.display = 'none';
+    subtaskForm.style.display = 'block';
+    subtaskList.innerHTML = `
+        <div class="subtask-input">
+            <input type="text" placeholder="Subtask">
+            <input type="number" placeholder="Minutes" min="1">
+        </div>
+    `;
+}
+
+function addSubtaskInput() {
+    const newInput = document.createElement('div');
+    newInput.className = 'subtask-input';
+    newInput.innerHTML = `
+        <input type="text" placeholder="Subtask">
+        <input type="number" placeholder="Minutes" min="1">
+    `;
+    subtaskList.appendChild(newInput);
+}
+
+function saveMITWithSubtasks() {
+    const subtaskInputs = subtaskList.querySelectorAll('.subtask-input');
+    subtaskInputs.forEach(input => {
+        const title = input.querySelector('input[type="text"]').value.trim();
+        const minutes = input.querySelector('input[type="number"]').value;
+        if (title && minutes) {
+            currentMIT.subtasks.push({
+                title,
+                estimatedMinutes: parseInt(minutes),
+                completed: false
+            });
+        }
+    });
+    
+    currentMITs.push(currentMIT);
+    renderMITs();
+    hideSubtaskForm();
+}
+
+function saveMITWithoutBreakdown() {
+    currentMITs.push(currentMIT);
+    renderMITs();
+    breakdownForm.style.display = 'none';
+}
+
+function hideSubtaskForm() {
+    subtaskForm.style.display = 'none';
+    currentMIT = null;
+}
+
+function renderMITs() {
+    mitList.innerHTML = '';
+    currentMITs.forEach((mit, index) => {
+        const mitElement = document.createElement('div');
+        mitElement.className = 'mit-item' + (mit.subtasks.length ? ' has-subtasks' : '');
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = mit.completed;
+        checkbox.onchange = () => toggleMITComplete(index);
+        
+        mitElement.appendChild(checkbox);
+        mitElement.appendChild(document.createTextNode(' ' + mit.title));
+        
+        if (mit.subtasks.length) {
+            const subtasksList = document.createElement('div');
+            subtasksList.className = 'subtask-list';
+            mit.subtasks.forEach((subtask, subIndex) => {
+                const subtaskElement = document.createElement('div');
+                const subtaskCheckbox = document.createElement('input');
+                subtaskCheckbox.type = 'checkbox';
+                subtaskCheckbox.checked = subtask.completed;
+                subtaskCheckbox.onchange = () => toggleSubtaskComplete(index, subIndex);
+                
+                subtaskElement.appendChild(subtaskCheckbox);
+                subtaskElement.appendChild(document.createTextNode(
+                    ` ${subtask.title} (${subtask.estimatedMinutes}min)`
+                ));
+                subtasksList.appendChild(subtaskElement);
+            });
+            mitElement.appendChild(subtasksList);
+            mitElement.onclick = () => toggleSubtaskList(mitElement);
+        }
+        
+        mitList.appendChild(mitElement);
+    });
+}
+
+function toggleSubtaskList(mitElement) {
+    const subtaskList = mitElement.querySelector('.subtask-list');
+    if (subtaskList) {
+        subtaskList.classList.toggle('show');
+    }
+}
+
+function toggleMITComplete(index) {
+    currentMITs[index].completed = !currentMITs[index].completed;
+    renderMITs();
+}
+
+function toggleSubtaskComplete(mitIndex, subtaskIndex) {
+    currentMITs[mitIndex].subtasks[subtaskIndex].completed = 
+        !currentMITs[mitIndex].subtasks[subtaskIndex].completed;
+    renderMITs();
+}
+
+function renderTaskOptions() {
+    sprintTaskOptions.innerHTML = '';
+    currentMITs.forEach((mit, index) => {
+        if (!mit.completed) {
+            const option = document.createElement('div');
+            option.className = 'task-option';
+            option.textContent = mit.title;
+            option.onclick = () => selectTaskForSprint(index);
+            sprintTaskOptions.appendChild(option);
+            
+            if (mit.subtasks.length) {
+                mit.subtasks.forEach((subtask, subIndex) => {
+                    if (!subtask.completed) {
+                        const subOption = document.createElement('div');
+                        subOption.className = 'task-option subtask';
+                        subOption.textContent = `→ ${subtask.title}`;
+                        subOption.onclick = () => selectTaskForSprint(index, subIndex);
+                        sprintTaskOptions.appendChild(subOption);
+                    }
+                });
+            }
+        }
+    });
+}
+
+function selectTaskForSprint(mitIndex, subtaskIndex = null) {
+    selectedTaskForSprint = { mitIndex, subtaskIndex };
+    
+    // Update visual selection
+    document.querySelectorAll('.task-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    event.target.classList.add('selected');
+    
+    // Start the timer with the previously stored minutes
+    timeLeft = pendingMinutes * 60;
+    updateDisplay();
+    isBreakTime = false;
+    addTimeBtn.style.display = 'block';
+    modeLabel.textContent = `${pendingMinutes} Minute Focus Sprint`;
+    breakButtons.style.display = 'none';
+    breakSuggestions.style.display = 'none';
+    sprintTaskSelect.style.display = 'none';
 } 
