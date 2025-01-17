@@ -1,0 +1,258 @@
+@font-face {
+    font-family: 'Arca Majora';
+    src: url('path/to/ArcaMajora3-Bold.woff2') format('woff2');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Centra No 2';
+    src: url('path/to/CentraNo2-Book.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+:root {
+    /* Primary palette */
+    --super-green: #5AFECF;
+    --mild-green: #007F6D;
+    --dark-green: #162825;
+    
+    /* Secondary palette */
+    --light-green: #E9FFF6;
+    --gray: #EDEDED;
+    --white: #FFFFFF;
+    
+    /* Functional colors */
+    --text: var(--dark-green);
+    --text-light: var(--mild-green);
+    --background: var(--light-green);
+    --card: var(--white);
+    --success: var(--mild-green);
+}
+
+body {
+    font-family: 'Centra No 2', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: var(--background);
+    color: var(--text);
+}
+
+.container {
+    text-align: center;
+    background-color: var(--card);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    max-width: 90%;
+    width: 480px;
+}
+
+h1 {
+    font-family: 'Arca Majora', sans-serif;
+    color: var(--text);
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+    letter-spacing: -0.5px;
+}
+
+.timer-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 5rem;
+    font-weight: 700;
+    margin: 2rem 0;
+    color: var(--mild-green);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -2px;
+}
+
+#addTimeBtn {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    margin-left: 1rem;
+    background-color: var(--super-green);
+    color: var(--dark-green);
+    border-radius: 9999px;
+    font-weight: 500;
+}
+
+#addTimeBtn:hover {
+    background-color: var(--mild-green);
+    color: var(--white);
+}
+
+.mode-toggle {
+    margin: 1.5rem 0;
+    background-color: var(--gray);
+    padding: 0.25rem;
+    border-radius: 9999px;
+    display: inline-flex;
+    gap: 0.25rem;
+}
+
+.mode-toggle button {
+    background-color: transparent;
+    color: var(--text-light);
+    margin: 0;
+    padding: 0.625rem 1.25rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.mode-toggle button.active {
+    background-color: var(--card);
+    color: var(--mild-green);
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.mode-toggle button:hover:not(.active) {
+    color: var(--dark-green);
+}
+
+.focus-buttons, .break-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin: 1.5rem auto;
+    max-width: 320px;
+}
+
+.focus-buttons button, .break-buttons button {
+    background-color: var(--gray);
+    color: var(--text);
+    padding: 1rem;
+    border-radius: 12px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.focus-buttons button:hover, .break-buttons button:hover {
+    background-color: var(--mild-green);
+    color: var(--white);
+    transform: translateY(-1px);
+}
+
+.break-buttons button {
+    background-color: var(--gray);
+    color: var(--text);
+}
+
+.break-buttons button:hover {
+    background-color: var(--mild-green);
+}
+
+.control-buttons {
+    margin-top: 2rem;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+}
+
+#startBtn {
+    background-color: var(--super-green);
+    color: var(--dark-green);
+    padding: 0.75rem 2rem;
+    font-weight: 500;
+    border-radius: 9999px;
+    min-width: 120px;
+}
+
+#startBtn:hover {
+    background-color: var(--mild-green);
+    color: var(--white);
+}
+
+#resetBtn {
+    background-color: var(--gray);
+    color: var(--dark-green);
+    padding: 0.75rem 2rem;
+    font-weight: 500;
+    border-radius: 9999px;
+    min-width: 120px;
+}
+
+#resetBtn:hover {
+    background-color: var(--dark-green);
+    color: var(--white);
+}
+
+.mode-label {
+    font-size: 1rem;
+    margin: 1rem 0;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+button {
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+button:focus {
+    outline: 2px solid var(--mild-green);
+    outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 1.5rem;
+    }
+    
+    .timer-display {
+        font-size: 3.5rem;
+    }
+    
+    .focus-buttons, .break-buttons {
+        grid-template-columns: 1fr;
+    }
+}
+
+.break-suggestions {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--gray);
+    text-align: left;
+}
+
+.break-suggestions h2 {
+    font-family: 'Arca Majora', sans-serif;
+    font-size: 1.25rem;
+    color: var(--mild-green);
+    margin-bottom: 1rem;
+}
+
+.break-suggestions ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.break-suggestions li {
+    color: var(--text-light);
+    font-size: 0.875rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.break-suggestions li:hover {
+    background-color: var(--light-green);
+    color: var(--dark-green);
+}
+
+@media (max-width: 480px) {
+    .break-suggestions ul {
+        grid-template-columns: 1fr;
+    }
+} 
