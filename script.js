@@ -27,22 +27,21 @@ const sprintTaskOptions = document.getElementById('sprintTaskOptions');
 function setTimer(minutes) {
     if (timerId) return;
     
-    // Show task selection before starting timer
-    sprintTaskSelect.style.display = 'block';
-    renderTaskOptions();
-    
-    // Store the minutes for later use
-    pendingMinutes = minutes;
+    // Set up timer without starting it
+    timeLeft = minutes * 60;
+    updateDisplay();
+    isBreakTime = false;
+    addTimeBtn.style.display = 'block';
+    sprintTaskSelect.style.display = 'none';
 }
 
 function setBreak(minutes) {
-    if (timerId) return; // Prevent setting timer while it's running
+    if (timerId) return;
     timeLeft = minutes * 60;
     updateDisplay();
     isBreakTime = true;
     addTimeBtn.style.display = 'none';
-    modeLabel.textContent = `${minutes} Minute Brain Break`;
-    breakSuggestions.style.display = 'none'; // Hide suggestions when break starts
+    // Don't auto-start break timer
 }
 
 function toggleMode(mode) {
@@ -51,18 +50,19 @@ function toggleMode(mode) {
     if (mode === 'work') {
         workModeBtn.classList.add('active');
         breakModeBtn.classList.remove('active');
-        focusButtons.style.display = 'block';
+        sprintTaskSelect.style.display = 'block'; // Show task selection first
+        focusButtons.style.display = 'none'; // Hide duration buttons until task is selected
         breakButtons.style.display = 'none';
-        modeLabel.textContent = 'Select Focus Sprint Duration';
         breakSuggestions.style.display = 'none';
     } else {
         workModeBtn.classList.remove('active');
         breakModeBtn.classList.add('active');
         focusButtons.style.display = 'none';
         breakButtons.style.display = 'block';
-        modeLabel.textContent = 'Select Brain Break Duration';
-        breakSuggestions.style.display = 'block'; // Show break suggestions in break mode
+        breakSuggestions.style.display = 'block';
+        sprintTaskSelect.style.display = 'none';
     }
+    renderTaskOptions();
 }
 
 function startTimer() {
@@ -88,10 +88,8 @@ function startTimer() {
                 if (!isBreakTime) {
                     // Automatically switch to break mode after focus sprint
                     toggleMode('break');
-                    modeLabel.textContent = 'Focus Sprint complete! Select Brain Break Duration';
                 } else {
                     toggleMode('work');
-                    modeLabel.textContent = 'Brain Break finished! Select new Focus Sprint Duration';
                 }
             }
         }, 1000);
@@ -105,8 +103,9 @@ function resetTimer() {
     timeLeft = 0;
     updateDisplay();
     startBtn.textContent = 'Start';
-    toggleMode('work');
+    toggleMode('work'); // This will show task selection first
     breakSuggestions.style.display = 'none';
+    selectedTaskForSprint = null; // Reset selected task
 }
 
 function updateDisplay() {
@@ -289,13 +288,7 @@ function selectTaskForSprint(mitIndex, subtaskIndex = null) {
     });
     event.target.classList.add('selected');
     
-    // Start the timer with the previously stored minutes
-    timeLeft = pendingMinutes * 60;
-    updateDisplay();
-    isBreakTime = false;
-    addTimeBtn.style.display = 'block';
-    modeLabel.textContent = `${pendingMinutes} Minute Focus Sprint`;
-    breakButtons.style.display = 'none';
-    breakSuggestions.style.display = 'none';
-    sprintTaskSelect.style.display = 'none';
+    // Show duration options after task is selected
+    focusButtons.style.display = 'block';
+    sprintTaskSelect.style.display = 'none'; // Hide task selection after choosing
 } 
